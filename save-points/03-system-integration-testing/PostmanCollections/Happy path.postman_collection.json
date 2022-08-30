@@ -1,0 +1,514 @@
+{
+	"info": {
+		"_postman_id": "5200e2af-76eb-4a52-8e5e-db989ff305d7",
+		"name": "Happy path",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3015194"
+	},
+	"item": [
+		{
+			"name": "Add a new location",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.response.to.have.status(200); \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check returned message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Location added\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{new_location}}\",\r\n    \"latitude\": {{new_lat}},\r\n    \"longitude\": {{new_lon}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify that location is added",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Check if location has been added', () => {\r",
+							"    let fail = true;\r",
+							"    _.each(pm.response.json(), (arrItem) => {\r",
+							"        if (arrItem.name === pm.collectionVariables.get('new_location')) {\r",
+							"            pm.expect(String(arrItem.latitude)).to.eql(pm.collectionVariables.get('new_lat'));\r",
+							"            pm.expect(String(arrItem.longitude)).to.eql(pm.collectionVariables.get('new_lon'));\r",
+							"            pm.collectionVariables.set(\"new_id\", arrItem.id);\r",
+							"            fail = false;\r",
+							"        }\r",
+							"    })\r",
+							"    if (fail != false){\r",
+							"        pm.expect.fail(pm.collectionVariables.get('new_location') + \" not found\");\r",
+							"    };\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get details for new location",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test('JSON resoponse contains \"airPressureAtSeaLevel\"', function() {\r",
+							"  pm.expect(jsonData).to.have.property('airPressureAtSeaLevel');\r",
+							"});\r",
+							"\r",
+							"pm.test('JSON resoponse contains \"airTemperature\"', function() {\r",
+							"  pm.expect(jsonData).to.have.property('airTemperature');\r",
+							"});\r",
+							"\r",
+							"pm.test('JSON resoponse contains \"relativeHumidity\"', function() {\r",
+							"  pm.expect(jsonData).to.have.property('relativeHumidity');\r",
+							"});\r",
+							"\r",
+							"pm.test('JSON resoponse contains \"windFromDirection\"', function() {\r",
+							"  pm.expect(jsonData).to.have.property('windFromDirection');\r",
+							"});\r",
+							"\r",
+							"pm.test('JSON resoponse contains \"windSpeed\"', function() {\r",
+							"  pm.expect(jsonData).to.have.property('windSpeed');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations/details?id={{new_id}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations",
+						"details"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{new_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get recommendation for preference",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test('JSON resoponse contains \"name\"', function() {\r",
+							"  pm.expect(jsonData).to.have.property('name');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations/recommended?preference={{preference}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations",
+						"recommended"
+					],
+					"query": [
+						{
+							"key": "preference",
+							"value": "{{preference}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit the new location",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"id\", \"noe\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check returned message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Location updated\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"//Validate PUT data"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": \"{{new_id}}\",\r\n  \"name\": \"{{edited_location}}\",\r\n  \"latitude\": {{edited_lat}},\r\n  \"longitude\": {{edited_lon}},\r\n  \"timeserie\": {\r\n    \"data\": {\r\n      \"instant\": {\r\n        \"details\": {\r\n          \"air_pressure_at_sea_level\": 0,\r\n          \"air_temperature\": 0,\r\n          \"relative_humidity\": 0,\r\n          \"wind_from_direction\": 0,\r\n          \"wind_speed\": 0\r\n        }\r\n      }\r\n    },\r\n    \"time\": \"2022-01-20T08:05:04.601Z\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations/{{new_id}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations",
+						"{{new_id}}"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify that the location in edited",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Check if location has been edited', () => {\r",
+							"    let fail = true;\r",
+							"    _.each(pm.response.json(), (arrItem) => {\r",
+							"        if (arrItem.id === pm.collectionVariables.get('new_id')) {\r",
+							"            pm.expect(String(arrItem.name)).to.eql(pm.collectionVariables.get('edited_location'));\r",
+							"            pm.expect(String(arrItem.latitude)).to.eql(pm.collectionVariables.get('edited_lat'));\r",
+							"            pm.expect(String(arrItem.longitude)).to.eql(pm.collectionVariables.get('edited_lon'));\r",
+							"            fail = false;\r",
+							"        }\r",
+							"    })\r",
+							"    if (fail != false){\r",
+							"        pm.expect.fail(\"Did not find location id: \" + pm.collectionVariables.get('new_id'));\r",
+							"    };\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete the new location",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"id\", \"e5ae68cb-cf76-4b17-a37b-2d9e7c476c95\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check returned message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Location deleted\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\"{{id}}\"",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations/{{new_id}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations",
+						"{{new_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify that the location is deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Check if location has been deleted', () => {\r",
+							"    _.each(pm.response.json(), (arrItem) => {\r",
+							"        if (arrItem.id === pm.collectionVariables.get('new_id')) {\r",
+							"            pm.expect.fail(\"Deleted location was found\");\r",
+							"        }\r",
+							"    })\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "new_location",
+			"value": "Postman_Oslo",
+			"type": "default"
+		},
+		{
+			"key": "new_lat",
+			"value": "11",
+			"type": "default"
+		},
+		{
+			"key": "new_lon",
+			"value": "22",
+			"type": "default"
+		},
+		{
+			"key": "new_id",
+			"value": "Not set",
+			"type": "default"
+		},
+		{
+			"key": "edited_location",
+			"value": "Postman_Trondheim",
+			"type": "default"
+		},
+		{
+			"key": "edited_lat",
+			"value": "33",
+			"type": "default"
+		},
+		{
+			"key": "edited_lon",
+			"value": "44",
+			"type": "default"
+		},
+		{
+			"key": "preference",
+			"value": "Swimming",
+			"type": "default"
+		}
+	]
+}

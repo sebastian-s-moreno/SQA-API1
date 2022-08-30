@@ -1,0 +1,157 @@
+{
+	"info": {
+		"_postman_id": "e3e50489-8af6-4571-bf11-f02c0a219f9f",
+		"name": "Sad path",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3015194"
+	},
+	"item": [
+		{
+			"name": "Add a new location with empty name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Unsuccessful POST request\", function () {\r",
+							"    pm.response.to.have.status(400); \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check error message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.title).to.eql(\"One or more validation errors occurred.\");\r",
+							"    pm.expect(jsonData.errors.Name[0]).to.eql(\"The Name field is required.\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"\",\r\n    \"latitude\": 12,\r\n    \"longitude\": 21\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a new location with undefined latitude",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Unsuccessful POST request\", function () {\r",
+							"    pm.response.to.have.status(400); \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check error message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.title).to.eql(\"One or more validation errors occurred.\");\r",
+							"    pm.expect(jsonData.errors.Name[0]).to.eql(\"The field Latitude must be between -90 and 90.\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Stor by\",\r\n    \"latitude\": 9001,\r\n    \"longitude\": 21\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a new location with undefined longitude",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Unsuccessful POST request\", function () {\r",
+							"    pm.response.to.have.status(400); \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check error message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.title).to.eql(\"One or more validation errors occurred.\");\r",
+							"    pm.expect(jsonData.errors.Name[0]).to.eql(\"The field Longitude must be between -180 and 180.\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Stor by\",\r\n    \"latitude\": 21,\r\n    \"longitude\": -9000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7179/api/weather/locations",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7179",
+					"path": [
+						"api",
+						"weather",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
